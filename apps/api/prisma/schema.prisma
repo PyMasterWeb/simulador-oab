@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PREMIUM
+}
+
+enum ExamMode {
+  FULL
+  SUBJECT
+}
+
+enum Period {
+  WEEK
+  ALL
+}
+
+enum PaymentStatus {
+  APPROVED
+  REFUNDED
+  CANCELED
+  PENDING
+}
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  passwordHash      String
+  phone             String?
+  role              Role      @default(STUDENT)
+  plan              Plan      @default(FREE)
+  consentMarketing  Boolean   @default(false)
+  utmSource         String?
+  utmCampaign       String?
+  city              String?
+  college           String?
+  className         String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  attempts          Attempt[]
+  leaderboard       LeaderboardEntry[]
+  leads             Lead[]
+}
+
+model Subject {
+  id        String     @id @default(cuid())
+  name      String
+  slug      String     @unique
+  topics    Topic[]
+  questions Question[]
+}
+
+model Topic {
+  id        String     @id @default(cuid())
+  subjectId String
+  name      String
+  slug      String
+  subject   Subject    @relation(fields: [subjectId], references: [id])
+  questions Question[]
+
+  @@unique([subjectId, slug])
+}
+
+model Question {
+  id              String        @id @default(cuid())
+  subjectId       String
+  topicId         String
+  statement       String
+  alternatives    Json
+  correct         String
+  commentText     String
+  commentRefs     Json
+  commentVideoUrl String?
+  difficulty      Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  subject         Subject       @relation(fields: [subjectId], references: [id])
+  topic           Topic         @relation(fields: [topicId], references: [id])
+  examQuestions   ExamQuestion[]
+  attemptAnswers  AttemptAnswer[]
+}
+
+model Exam {
+  id              String        @id @default(cuid())
+  title           String
+  mode            ExamMode
+  isFree          Boolean       @default(false)
+  durationMinutes Int
+  createdAt       DateTime      @default(now())
+  questions       ExamQuestion[]
+  attempts        Attempt[]
+}
+
+model ExamQuestion {
+  id         String   @id @default(cuid())
+  examId     String
+  questionId String
+  position   Int
+  exam       Exam     @relation(fields: [examId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+
+  @@unique([examId, questionId])
+  @@unique([examId, position])
+}
+
+model Attempt {
+  id           String          @id @default(cuid())
+  userId       String
+  examId       String
+  startedAt    DateTime        @default(now())
+  finishedAt   DateTime?
+  totalTimeSec Int?
+  score        Float?
+  correctCount Int?
+  status       String          @default("IN_PROGRESS")
+  user         User            @relation(fields: [userId], references: [id])
+  exam         Exam            @relation(fields: [examId], references: [id])
+  answers      AttemptAnswer[]
+}
+
+model AttemptAnswer {
+  id           String   @id @default(cuid())
+  attemptId    String
+  questionId   String
+  selected     String?
+  isCorrect    Boolean?
+  timeSpentSec Int
+  answeredAt   DateTime @default(now())
+  reviewLater  Boolean  @default(false)
+  attempt      Attempt  @relation(fields: [attemptId], references: [id])
+  question     Question @relation(fields: [questionId], references: [id])
+
+  @@unique([attemptId, questionId])
+}
+
+model LeaderboardEntry {
+  id        String   @id @default(cuid())
+  period    Period
+  userId    String
+  score     Float
+  timeSec   Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model PaymentEvent {
+  id          String        @id @default(cuid())
+  provider    String
+  payloadJson Json
+  userEmail   String
+  status      PaymentStatus
+  createdAt   DateTime      @default(now())
+}
+
+model Lead {
+  id               String   @id @default(cuid())
+  userId           String?
+  name             String
+  email            String
+  phone            String?
+  consentMarketing Boolean
+  utmSource        String?
+  utmCampaign      String?
+  createdAt        DateTime @default(now())
+  user             User?    @relation(fields: [userId], references: [id])
+}

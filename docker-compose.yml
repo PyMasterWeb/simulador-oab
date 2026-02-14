@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: oab-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: oab
+      POSTGRES_PASSWORD: oab
+      POSTGRES_DB: oab_sim
+    ports:
+      - "5432:5432"
+    volumes:
+      - oab_pg_data:/var/lib/postgresql/data
+volumes:
+  oab_pg_data:

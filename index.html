@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador OAB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">OAB Estudo Inteligente</p>
+        <h1>Simulado com Tempo e Relatório de Desempenho</h1>
+        <p class="subtitle">Escolha a prova, responda questão por questão e receba diagnóstico objetivo e subjetivo para saber onde melhorar.</p>
+      </div>
+      <div class="hero-card">
+        <p id="portal-updated"></p>
+        <a href="https://examedeordem.oab.org.br/EditaisProvas?NumeroExame=16773" target="_blank" rel="noreferrer">Abrir portal oficial</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel" id="setup-panel">
+        <h2>1. Configurar Simulado</h2>
+        <div class="controls">
+          <label>
+            Tipo
+            <select id="mode-select">
+              <option value="objective">Objetiva (1ª fase)</option>
+              <option value="subjective">Subjetiva (2ª fase)</option>
+            </select>
+          </label>
+          <label>
+            Prova
+            <select id="exam-select"></select>
+          </label>
+          <label>
+            Área (2ª fase)
+            <select id="subject-select"></select>
+          </label>
+          <label>
+            Tempo (minutos)
+            <input id="time-limit" type="number" min="10" value="300" />
+          </label>
+          <button id="start-btn">Iniciar simulado</button>
+        </div>
+      </section>
+
+      <section class="panel hidden" id="sim-panel">
+        <div class="sim-header">
+          <div>
+            <h2 id="sim-title"></h2>
+            <p id="sim-meta" class="hint"></p>
+          </div>
+          <div class="timer-box">
+            <span>Tempo restante</span>
+            <strong id="timer">00:00:00</strong>
+          </div>
+        </div>
+
+        <article class="question-card">
+          <p class="question-index" id="question-index"></p>
+          <p id="question-text"></p>
+          <div id="objective-options" class="options"></div>
+          <button id="submit-objective" class="small hidden">Submeter resposta objetiva</button>
+          <div id="subjective-answer" class="hidden">
+            <textarea id="subjective-text" rows="10" placeholder="Escreva sua resposta aqui..."></textarea>
+            <button id="submit-subjective" class="small">Submeter resposta subjetiva</button>
+          </div>
+          <p class="hint" id="question-hint"></p>
+        </article>
+
+        <div class="actions">
+          <button id="prev-btn" class="ghost">Voltar</button>
+          <button id="next-btn" class="ghost">Próxima</button>
+          <button id="finish-btn">Finalizar e gerar relatório</button>
+        </div>
+      </section>
+
+      <section class="panel hidden" id="report-panel">
+        <h2>Relatório Final</h2>
+        <div id="report-content"></div>
+        <button id="restart-btn" class="ghost">Novo simulado</button>
+      </section>
+
+      <section class="panel">
+        <h2>Materiais oficiais</h2>
+        <div id="resource-list" class="resource-list"></div>
+      </section>
+    </main>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
