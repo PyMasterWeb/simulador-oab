@@ -1,8 +1,15 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
+
+function resolvePath(path: string) {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  if (typeof window !== "undefined") return `/api${normalized}`;
+  if (API_URL) return `${API_URL}${normalized}`;
+  return `http://127.0.0.1:3333${normalized}`;
+}
 
 export async function apiFetch<T>(path: string, init?: RequestInit, token?: string): Promise<T> {
   const hasBody = typeof init?.body !== "undefined";
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(resolvePath(path), {
     ...init,
     headers: {
       ...(hasBody ? { "Content-Type": "application/json" } : {}),

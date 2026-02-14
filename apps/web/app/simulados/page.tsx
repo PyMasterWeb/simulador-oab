@@ -37,7 +37,7 @@ export default function SimuladosPage() {
           <p className="font-semibold text-red-700">Falha ao carregar simulados</p>
           <p className="text-sm text-red-700">{error}</p>
           <p className="text-sm text-stone-700">
-            Verifique se a API está rodando em <code>http://localhost:3333</code>.
+            Verifique se o backend está online e se a variável de ambiente da API está configurada.
           </p>
         </section>
       ) : null}
